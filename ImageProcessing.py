@@ -73,7 +73,6 @@ class ImageProcessing:
 		return edges
 		
 	def getPath(self):
-	
 		grid = getObstacleMap(self)
 		
 		
