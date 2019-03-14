@@ -24,41 +24,11 @@ class Robot:
 		while self.running:
 
 			#Consider moving to WiiRemote
-			buttons = self.wiiRemote.getButtons()
-			if (buttons):
-				self.control = self.changeControl(buttons, False)
-			if (self.control == 1):
-				self.manual(buttons)
-			elif (self.control == 2):
-				self.autonomous(buttons)
-			
-			
-				
-	def changeControl(self, buttons, emergencyStop):
-		if (buttons & cwiid.BTN_1):
-			self.control = 1
-		elif(buttons & cwiid.BTN_2):
-			self.control = 2
-		elif (emergencyStop):
-			self.control = 1
+			self.wiiRemote.handleButtons()
+			if(self.wiiRemote.getControl() == 2)
+				self.autonomous()
+
 	
-	def manual(self, buttons):
-		if(buttons & cwiid.BTN_LEFT):
-			self.robotMovement.Left(leftSpeed, rightSpeed)
-		elif (buttons & cwiid.BTN_MINUS):
-			self.robotMovement.RotateLeft(leftSpeed, rightSpeed)
-		elif (buttons & cwiid.BTN_PLUS):
-			self.robotMovement.RotateRight(leftSpeed, rightSpeed)
-		elif(buttons & cwiid.BTN_RIGHT):
-			self.robotMovement.Right(leftSpeed, rightSpeed)
-		elif (buttons & cwiid.BTN_UP):
-			self.robotMovement.Forward(leftSpeed, rightSpeed)
-		elif (buttons & cwiid.BTN_DOWN):
-			self.robotMovement.Backward(leftSpeed, rightSpeed)
-		elif (buttons & cwiid.BTN_B):
-			self.Stop()
-		if (buttons):
-			time.sleep(button_delay)
 			
 	def autonomous(self, buttons):
 		if (buttons & cwiid.BTN_B):
