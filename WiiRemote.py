@@ -5,22 +5,19 @@ class WiiRemote:
 	control = 1
 	
 	def __init__(self):
-		wiiMoteConnected = false
-		while(wiiMoteConnected == false):
+		wiiMoteConnected = False
+		while(wiiMoteConnected == False):
 			try:
 				self.wii = cwiid.Wiimote()
 				wiiMoteConnected = true
-			except RunTimeError:
+			except RuntimeError:
 				time.sleep(1)
 				print("remote not connected")
 				
 		self.wii.rpt_mode = cwiid.RPT_BTN
-
-	def getButtons(self):
-		print("Getting buttons")
 		
 	def getControl(self):
-		
+		return control
 	
 	def manual(self, buttons, robotMovement):
 		if(buttons & cwiid.BTN_LEFT):

@@ -22,10 +22,8 @@ class Robot:
 
 	def mainloop(self):
 		while self.running:
-
-			#Consider moving to WiiRemote
 			self.wiiRemote.handleButtons()
-			if(self.wiiRemote.getControl() == 2)
+			if (self.wiiRemote.getControl() == 2):
 				self.autonomous()
 
 	
@@ -34,12 +32,6 @@ class Robot:
 		if (buttons & cwiid.BTN_B):
 			self.Stop()
 			self.changeControl(buttons, True)
-		#Check ultrasonic sensors for immediate object
-		
-		#Process Image and compute path using ImageProcessing script
-		#This should return a movement path
-		
-		#Execute movement path
 
 robot = Robot()
 	
