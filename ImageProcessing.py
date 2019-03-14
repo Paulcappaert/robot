@@ -9,10 +9,10 @@ class ImageProcessing:
 	
 	def __init__(self):
 		
-		cam = cv2.VideoCapture(1)
-		cam.set(3,640)
-		cam.set(4,480)
-		cam.set(5,30)
+		#cam = cv2.VideoCapture(0)
+		#cam.set(3,640)
+		#cam.set(4,480)
+		#cam.set(5,30)
 		camera_settings = sl.PyCAMERA_SETTINGS.PyCAMERA_SETTINGS_BRIGHTNESS
 		str_camera_settings = "BRIGHTNESS"
 		step_camera_settings = 1

@@ -1,3 +1,4 @@
+import ImageProcessing, RobotMovement, Sensors, WiiRemote
 
 class Robot:
 
@@ -12,31 +13,34 @@ class Robot:
 	rightSpeed = 65
 
 	def __init__(self):
-		self.imageProcessing = ImageProcessing()
-		self.robotMovement = RobotMovement()
-		self.Sensors = Sensors()
-		self.wiiRemote = WiiRemote()
+		self.imageProcessing = ImageProcessing.ImageProcessing()
+		self.robotMovement = RobotMovement.RobotMovement()
+		self.Sensors = Sensors.Sensors()
+		self.wiiRemote = WiiRemote.WiiRemote()
 		self.running = True
 		self.mainloop()
 
 	def mainloop(self):
 		while self.running:
-			buttons = wiiRemote.getButtons()
+
+			#Consider moving to WiiRemote
+			buttons = self.wiiRemote.getButtons()
 			if (buttons):
-				control = self.changeControl(buttons, False)
-			if (control == 1):
+				self.control = self.changeControl(buttons, False)
+			if (self.control == 1):
 				self.manual(buttons)
-			elif (control == 2):
+			elif (self.control == 2):
 				self.autonomous(buttons)
+			
 			
 				
 	def changeControl(self, buttons, emergencyStop):
 		if (buttons & cwiid.BTN_1):
-			control = 1
+			self.control = 1
 		elif(buttons & cwiid.BTN_2):
-			control = 2
+			self.control = 2
 		elif (emergencyStop):
-			control = 1
+			self.control = 1
 	
 	def manual(self, buttons):
 		if(buttons & cwiid.BTN_LEFT):
@@ -66,6 +70,8 @@ class Robot:
 		#This should return a movement path
 		
 		#Execute movement path
+
+robot = Robot()
 	
 	
 	
