@@ -8,7 +8,6 @@ class Robot:
 	wiiRemote = None
 	running = False
 	control = -1 #1 - manaual #2 - autonomous
-	button_delay = 0.1
 	leftSpeed = 65
 	rightSpeed = 65
 
@@ -22,16 +21,14 @@ class Robot:
 
 	def mainloop(self):
 		while self.running:
-			self.wiiRemote.handleButtons()
+			self.wiiRemote.handleButtonPress(self.robotMovement)
 			if (self.wiiRemote.getControl() == 2):
 				self.autonomous()
 
 	
 			
 	def autonomous(self, buttons):
-		if (buttons & cwiid.BTN_B):
-			self.Stop()
-			self.changeControl(buttons, True)
+		print("auto")
 
 robot = Robot()
 	

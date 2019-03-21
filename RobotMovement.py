@@ -7,7 +7,7 @@ class RobotMovement:
 	def __init__(self):
 	
 		#Set up connection to Arduino Mega
-		self.serialConnection = serial.Serial('/dev/ttyACM0',9600)
+		#self.serialConnection = serial.Serial('/dev/ttyACM0',9600)
 		time.sleep(2)
 	
 	def Stop(self):
