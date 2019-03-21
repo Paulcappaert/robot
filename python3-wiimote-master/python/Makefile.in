@@ -1,0 +1,24 @@
+#Copyright (C) 2007 Justin M. Tulloss
+
+include @top_builddir@/defs.mak
+
+ifdef ROOTDIR
+	SET_ROOT_DIR = "--root=$(ROOTDIR)"
+endif
+
+all:
+	$(PYTHON) setup.py build_ext $(DEBUGFLAGS) -I@top_builddir@/libcwiid -L@top_builddir@/libcwiid
+
+install:
+	$(PYTHON) setup.py install --record installed_files.txt
+
+uninstall:
+	cat installed_files.txt | xargs rm -rf
+
+clean:
+	rm -rf build
+
+distclean: clean
+	rm Makefile
+
+.PHONY: all install uninstall clean distclean
