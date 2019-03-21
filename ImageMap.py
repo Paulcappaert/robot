@@ -13,21 +13,21 @@ def getObstacleMap(img):
 	
 	#set up to divide the edge map into a grid with kernals of size 25
 	edges = edges[int(len(edges)/2):len(edges),0:len(edges[0])]
-	kernalSize = 25
+	kernalSize = 50
 	grid = []
 	rows,cols = edges.shape
-	height = int(rows/25)
-	width = int(cols/25)
+	height = int(rows/kernalSize)
+	width = int(cols/kernalSize)
 	
 	#creates the obstacle map from edge map
 	for i in range(height):
 		row = []
 		for j in range(width):
-			cornerx = i*25;
-			cornery = j*25;
+			cornerx = i*kernalSize;
+			cornery = j*kernalSize;
 			count = 0
-			for x in range(25):
-				for y in range(25):
+			for x in range(kernalSize):
+				for y in range(kernalSize):
 					count = count + edges[x + cornerx][y + cornery]
 
 			if count > 3:
@@ -79,7 +79,7 @@ def getPath(grid):
 	
 	bfs(graph, nodes, start, visited)
 	
-	#determines which node at the end of the graph is the shortest distance from the start point
+	#determines which position will be the endpoint
 	end = 0
 	stepVal = width*height # the path has to be shorter than this or else it doesn't exist
 	for i in range(width):
@@ -89,24 +89,20 @@ def getPath(grid):
 	
 	if stepVal == width*height:
 		return path
-	
-	count = 0
-	for i in range(height):
-		for j in range(width):
-			print(visited[count],end=" ")
-			count += 1;
-		print(" ")
-	
-	
+		
 	#saves the last positon of the path first
 	path.append([0,end])
 	
+	#gets the path from the BFS and stores the positon of each grid visited
 	curr_node = end
 	while stepVal > 1:
 		for i in range(nodes):
 			if graph[curr_node][i] == 1 and visited[i] == stepVal - 1:
+				
+				#translates the node number back to its position in the grid
 				y = i % width
 				x = int(i / width)
+				
 				curr_node = i
 				stepVal -= 1
 				path.append([x,y])
