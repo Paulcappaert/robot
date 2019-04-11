@@ -7,9 +7,7 @@ class Robot:
 	Sensors = None
 	wiiRemote = None
 	running = False
-	control = -1 #1 - manaual #2 - autonomous
-	leftSpeed = 65
-	rightSpeed = 65
+	control = 1 #1 - manaual #2 - autonomous
 
 	def __init__(self):
 		self.imageProcessing = ImageProcessing.ImageProcessing()

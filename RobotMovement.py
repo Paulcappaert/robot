@@ -7,7 +7,7 @@ class RobotMovement:
 	def __init__(self):
 	
 		#Set up connection to Arduino Mega
-		#self.serialConnection = serial.Serial('/dev/ttyACM0',9600)
+		self.serialConnection = serial.Serial('/dev/ttyACM0',9600)
 		time.sleep(2)
 	
 	def Stop(self):
@@ -39,6 +39,7 @@ class RobotMovement:
 		checksum = 127 & (130 + 1 + leftSpeed)
 		packet = struct.pack('BBBB',130,1,leftSpeed,checksum)
 		self.serialConnection.write(packet)
+		print(packet)
 		
 		#Front Right
 		self.serialConnection.write(str("A").encode())
@@ -57,6 +58,8 @@ class RobotMovement:
 		checksum = 127 & (130 + 0 + rightSpeed)
 		packet = struct.pack('BBBB',130,0,rightSpeed,checksum)
 		self.serialConnection.write(packet)
+		
+		print("Moving Left")
 	
 	def RotateRight(self, leftSpeed, rightSpeed):
 

@@ -2,22 +2,32 @@ import cv2, time
 import numpy as np
 import time
 
-def getObstacleMap(img):
+def getObstacleMap(img, depthImage):
 	#gets the image and creates a hopefuly not noisy edge detection
-	small = cv2.resize(img, (0, 0), fx=0.2, fy=0.2)
-	blur = cv2.GaussianBlur(small, (15, 15), 0)
+	#small = cv2.resize(img, (0, 0), fx=0.2, fy=0.2)
+	blur = cv2.GaussianBlur(img, (15, 15), 0)
 	grayimage = cv2.cvtColor(blur,cv2.COLOR_BGR2GRAY)
 	edges = cv2.Canny(grayimage, 50, 100)
 	
-	#todo - get the depth map
+	cv2.imshow('edges',edges)
+	cv2.waitKey(1)	
+	
+	depthBlur = cv2.GaussianBlur(depthImage, (5, 5), 0)
+	depthGrayimage = cv2.cvtColor(depthBlur,cv2.COLOR_BGR2GRAY)
+	depthEdges = cv2.Canny(depthGrayimage, 50, 100)
+	
+	cv2.imshow('depthEdges',depthEdges)
+	cv2.waitKey(1)
 	
 	#set up to divide the edge map into a grid with kernals of size 25
 	edges = edges[int(len(edges)/2):len(edges),0:len(edges[0])]
-	kernalSize = 50
+	kernalSize = 25
 	grid = []
 	rows,cols = edges.shape
 	height = int(rows/kernalSize)
 	width = int(cols/kernalSize)
+	
+	depthEdges = depthEdges[int(len(depthEdges)/2):len(depthEdges),0:len(depthEdges[0])]
 	
 	#creates the obstacle map from edge map
 	for i in range(height):
@@ -25,20 +35,28 @@ def getObstacleMap(img):
 		for j in range(width):
 			cornerx = i*kernalSize;
 			cornery = j*kernalSize;
-			count = 0
+			count1 = 0
+			count2 = 0
 			for x in range(kernalSize):
 				for y in range(kernalSize):
-					count = count + edges[x + cornerx][y + cornery]
+					count1 = count1 + edges[x + cornerx][y + cornery]
+					count2 = count2 + depthEdges[x + cornerx][y + cornery]
 
-			if count > 3:
+			if count1 > 3 and count2 > 3:
 				row.append(1)
 			else:
 				row.append(0)
 
 		grid.append(row)
 		
-	#todo - update the obstacle map with information from the depth map
-	return edges, grid
+	for i in range(height):
+		for j in range(width):
+			print(grid[i][j],end=" ")
+		print()	
+	print()
+		
+	return getPath(grid)
+		
 	
 def getPath(grid):
 	height = len(grid)
@@ -125,8 +143,9 @@ def bfs(graph, nodes, start, visited):
 #cap = cv2.VideoCapture(0)
 
 #_,img = cap.read()
+'''
 start = time.time()
-img = cv2.imread('hall6.jpg',1)
+img = cv2.imread('hall6.JPG',1)
 edges,grid = getObstacleMap(img)
 path = getPath(grid)
 
@@ -145,3 +164,4 @@ print(end - start)
 #cv2.imshow('hall',img)
 cv2.imshow('hall1',edges)
 cv2.waitKey(0)
+'''

@@ -1,78 +1,50 @@
-import cv2
-import pyzed.camera as zcam
-import pyzed.types as tp
-import pyzed.core as core
-import pyzed.defines as sl
+import pyzed.sl as sl
 import numpy as np
+import cv2, time
+import ImageMap
 
 class ImageProcessing:
+
+	zed = None	
 	
 	def __init__(self):
-		
-		#cam = cv2.VideoCapture(0)
-		#cam.set(3,640)
-		#cam.set(4,480)
-		#cam.set(5,30)
-		camera_settings = sl.PyCAMERA_SETTINGS.PyCAMERA_SETTINGS_BRIGHTNESS
-		str_camera_settings = "BRIGHTNESS"
-		step_camera_settings = 1
-		self.getPath = True
-		init = zcam.PyInitParameters()
-		init = zcam.PyInitParameters(depth_mode=sl.PyDEPTH_MODE.PyDEPTH_MODE_PERFORMANCE, coordinate_units=sl.PyUNIT.PyUNIT_METER,coordinate_system=sl.PyCOORDINATE_SYSTEM.PyCOORDINATE_SYSTEM_RIGHT_HANDED_Y_UP, sdk_verbose=True)
-		cam2 = zcam.PyZEDCamera()
-		if not cam2.is_opened():
-			print("Opening ZED Camera...")
-			status = cam2.open(init)
-		if status != tp.PyERROR_CODE.PySUCCESS:
-			print(repr(status))
-			exit()
-		
-		runtime = zcam.PyRuntimeParameters()
-		runtime.sensing_mode = sl.PySENSING_MODE.PySENSING_MODE_STANDARD  # Use STANDARD sensing mode
-		mat = core.PyMat()
-		depth = core.PyMat()
-		point_cloud = core.PyMat()
+		# Create a Camera object
+		self.zed = sl.Camera()
+		# Set configuration parameters
+		init_params = sl.InitParameters()
+		init_params.depth_mode = sl.DEPTH_MODE.DEPTH_MODE_MEDIUM
+		init_params.coordinate_units = sl.UNIT.UNIT_METER
+		#init_params.depth_minimum_distance = 0.3
+
+		# Open the camera
+		err = self.zed.open(init_params)
+		if err != sl.ERROR_CODE.SUCCESS:
+			print("Error opening camera")
+			print(err)
+			exit(1)
+
+		self.runtime_parameters =sl.RuntimeParameters()
+		self.runtime_parameters.sensing_mode = sl.SENSING_MODE.SENSING_MODE_FILL
 		
 	def getObstacleMap(self):
-		#gets the image and creates a hopefuly not noisy edge detection
-		_,img = cam.read()
-		small = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
-		blur = cv2.GaussianBlur(small, (15, 15), 0)
-		grayimage = cv2.cvtColor(blur,cv2.COLOR_BGR2GRAY)
-		edges = cv2.Canny(grayimage, 50, 100)
-		
-		#todo - get the depth map
-		
-		#set up to divide the edge map into a grid with kernals of size 25
-		edges = edges[int(len(edges)/2):len(edges),0:len(edges[0])]
-		kernalSize = 25
-		grid = []
-		rows,cols = edges.shape
-		height = int(rows/25)
-		width = int(cols/25)
-		
-		#creates the obstacle map from edge map
-		for i in range(height):
-			row = []
-			for j in range(width):
-				cornerx = i*25;
-				cornery = j*25;
-				count = 0
-				for x in range(25):
-					for y in range(25):
-						count = count + edges[x + cornerx][y + cornery]
-
-				if count > 3:
-					row.append(1)
-				else:
-					row.append(0)
-
-			grid.append(row)
+		depth_map  = sl.Mat()
+		rgb_left_image = sl.Mat()      	
+		if self.zed.grab(self.runtime_parameters) ==  sl.ERROR_CODE.SUCCESS :
+			self.zed.retrieve_image(depth_map, sl.VIEW.VIEW_DEPTH)
+			self.zed.retrieve_image(rgb_left_image, sl.VIEW.VIEW_LEFT)
+			resizedDepthImage = cv2.resize(depth_map.get_data(), (0,0), fx=0.5, fy=0.5)
+			resizedLeftImage = cv2.resize(rgb_left_image.get_data(), (0,0), fx=0.5, fy=0.5)
+			path = ImageMap.getObstacleMap(resizedLeftImage,resizedDepthImage)
 			
-		#todo - update the obstacle map with information from the depth map
-		return edges
-		
-	def getPath(self):
-		grid = getObstacleMap(self)
-		
-		
+			
+			#for x in path:
+			#	print(x[0],end=" ")
+			#	print(x[1])
+				
+			cv2.imshow('img',resizedLeftImage)			
+			cv2.waitKey(1)
+
+			
+ip = ImageProcessing()
+while True:
+	ip.getObstacleMap()
